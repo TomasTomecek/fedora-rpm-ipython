@@ -121,6 +121,7 @@ Requires:       python-zmq
 Requires:       pexpect
 Requires:       python-mglob
 Requires:       python-simplegeneric
+Requires:       python-jsonpointer
 
 #For starting ipython from pkg_resources
 Requires:       python-setuptools
@@ -252,30 +253,36 @@ This package contains the gui of %{name}, which requires PyQt.
 %endif # with_python3
 
 
-
 %prep
 %setup -q
 
 # delete bundling libs
 pushd IPython/external
-# python's own modules
-rm argparse/_argparse.py
+
+# remove appnope, Fedora is not OS X
+rm appnope/_nope.py
+
+# remove decorator.py
+rm decorator/_decorator.py
 
 # use decorators of numpy
 rm decorators/_decorators.py
+rm decorators/_numpy_testing_noseclasses.py
+rm decorators/_numpy_testing_utils.py
+
+rm jsonpointer/_jsonpointer.py
+rm jsonpointer/VERSION.txt
+
+rm jsonschema/_jsonschema.py
+rm jsonschema/VERSION
+rm jsonschema/COPYING
+
+rm path/_path.py
+
+rm pexpect/_pexpect.py
 
 # other packages exist in fedora
 rm simplegeneric/_simplegeneric.py
-%if ! 0%{?with_python3}
-# bundle this on python3 in experimental version for now
-rm pexpect/_pexpect.py
-%endif
-
-# rejected in a PEP, probably no upstream
-#rm Itpl/_Itpl.py
-
-# available at pypi
-#rm path/_path.py
 
 # ssh modules from paramiko
 
@@ -284,7 +291,8 @@ popd
 %if 0%{?with_python3}
 rm -rf %{py3dir}
 cp -a . %{py3dir}
-find %{py3dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python3}|'
+# TODO: check if this is necessary
+#find %{py3dir} -name '*.py' | xargs sed -i '1s|^#!python|#!%{__python3}|'
 %endif # with_python3
 
 
