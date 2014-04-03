@@ -1,4 +1,5 @@
 fedora-rpm-ipython
 ==================
 
-RPM package of ipython for Fedora.
+Lets bring ipython 2.0 to Fedora!
+
